@@ -1,150 +1,111 @@
 # Lab 1: Basic Agent Setup with Strands SDK
 
-## Objective
-Build your first AI agent using the Strands Agents SDK and Amazon Bedrock. By the end of this lab, you'll have a working conversational agent that can parse resumes from plain text.
+## Overview
+Build your first AI agent using the Strands Agents SDK and Amazon Bedrock. You'll progress through 4 steps, each building on the last.
+
+| Step | File | What You Learn |
+|------|------|----------------|
+| Setup | `setup.sh` | Project initialization with uv |
+| 1 | `step1_hello_agent.py` | Create an agent, send a message, get a response |
+| 2 | `step2_first_tool.py` | Define a `@tool`, see the agent call it autonomously |
+| 3 | `step3_conversation.py` | Multi-turn conversation with memory |
+| 4 | `step4_resume_agent.py` | Complete interactive resume parsing agent |
 
 ## Prerequisites
 - Python 3.12+
-- AWS account with Bedrock model access (Claude 3.7 Sonnet)
+- AWS account with Bedrock model access (Claude 3.7 Sonnet enabled)
 - AWS credentials configured (`aws configure` or `ada credentials update`)
 
-## Step 1: Project Setup
-
-Initialize a new Python project with `uv`:
+## Quick Start
 
 ```bash
-# Install uv if you don't have it
-curl -LsSf https://astral.sh/uv/install.sh | sh
-source $HOME/.local/bin/env
-
-# Create project
-uv init resume-agent --python 3.12
-cd resume-agent
-uv venv --python 3.12
-
-# Install dependencies
-uv add strands-agents boto3
+cd tutorial/lab1
+chmod +x setup.sh
+./setup.sh
 ```
 
-## Step 2: Create Your First Agent
-
-Create `agent.py`:
-
-```python
-import os
-from strands import Agent
-from strands.models.bedrock import BedrockModel
-
-model = BedrockModel(
-    model_id="us.anthropic.claude-3-7-sonnet-20250219-v1:0",
-    region_name=os.environ.get("AWS_DEFAULT_REGION", "us-east-1"),
-)
-
-agent = Agent(
-    model=model,
-    system_prompt="You are a helpful assistant that answers questions concisely.",
-)
-
-# Test it
-response = agent("What is an ATS-friendly resume?")
-print(response)
-```
-
-Run it:
+Then run each step in order:
 ```bash
-uv run python agent.py
+uv run python step1_hello_agent.py
+uv run python step2_first_tool.py
+uv run python step3_conversation.py
+uv run python step4_resume_agent.py
 ```
 
-You should see the agent respond with an explanation of ATS-friendly resumes.
+## Step-by-Step Guide
 
-## Step 3: Add a Custom Tool
+### Step 1: Hello Agent (`step1_hello_agent.py`)
 
-Tools let the agent perform actions. Create a `parse_resume` tool that validates resume text:
+The simplest possible agent. Three lines of setup:
 
 ```python
-import os
-from strands import Agent, tool
-from strands.models.bedrock import BedrockModel
+model = BedrockModel(model_id="us.anthropic.claude-3-7-sonnet-20250219-v1:0", ...)
+agent = Agent(model=model, system_prompt="...")
+response = agent("Your message here")
+```
 
-model = BedrockModel(
-    model_id="us.anthropic.claude-3-7-sonnet-20250219-v1:0",
-    region_name=os.environ.get("AWS_DEFAULT_REGION", "us-east-1"),
-)
+**Key takeaway:** `BedrockModel` configures the LLM, `Agent` wraps it, and calling `agent("message")` sends a request to Bedrock and returns the response.
 
+### Step 2: First Tool (`step2_first_tool.py`)
 
+Introduces the `@tool` decorator — the core of Strands' power:
+
+```python
 @tool
 def parse_resume(resume_text: str) -> dict:
     """Validate resume text for structured parsing.
-
     Args:
-        resume_text: Plain text content of a resume (100-50000 chars).
+        resume_text: Plain text content of a resume.
     """
-    n = len(resume_text.strip())
-    if n < 100:
-        raise ValueError(f"Resume too short ({n} chars). Min 100.")
-    if n > 50_000:
-        raise ValueError(f"Resume too long ({n} chars). Max 50000.")
-    return {"status": "validated", "char_count": n}
-
-
-agent = Agent(
-    model=model,
-    tools=[parse_resume],
-    system_prompt="""You are a resume parsing agent.
-When given resume text, call parse_resume to validate it,
-then extract structured JSON with: name, email, phone, summary,
-skills, experience, education. Only extract what's in the text.""",
-)
+    # Your logic here
+    return {"status": "validated"}
 ```
 
-## Step 4: Test with Sample Resume
+The LLM reads the docstring and type hints to understand:
+- What the tool does (from the docstring)
+- What parameters it needs (from the Args)
+- What it returns (from the return type)
 
-Add a test script `main.py`:
+The agent then decides autonomously when to call it.
 
-```python
-from agent import agent
+**Key takeaway:** You define tools as regular Python functions. The `@tool` decorator + docstring is all the LLM needs to use them.
 
-SAMPLE_RESUME = """
-John Smith
-Email: john.smith@email.com | Phone: (555) 123-4567
+### Step 3: Conversation Memory (`step3_conversation.py`)
 
-PROFESSIONAL SUMMARY
-Experienced software engineer with 5+ years in Python and AWS.
+Shows that the agent remembers previous messages:
+- Turn 1: Parse a resume
+- Turn 2: Ask about the resume (agent remembers it)
+- Turn 3: Request a modification (agent uses prior context)
 
-SKILLS
-Python, Java, AWS, Docker, Kubernetes, PostgreSQL, REST APIs
+**Key takeaway:** Conversation history is automatic. Each `agent()` call builds on the previous context.
 
-EXPERIENCE
-Senior Software Engineer | Acme Corp | Jan 2021 - Present
-- Led migration to microservices, reducing deploy time by 60%
-- Built data pipeline processing 1M+ events/day
+### Step 4: Complete Resume Agent (`step4_resume_agent.py`)
 
-Software Engineer | StartupXYZ | Jun 2018 - Dec 2020
-- Built recommendation engine for 10M+ users
-- Optimized queries reducing p99 latency from 500ms to 50ms
+Puts it all together into an interactive agent with:
+- A detailed system prompt defining the extraction schema
+- Input validation via the `parse_resume` tool
+- A rich sample resume for demo
+- An interactive loop for follow-up questions
 
-EDUCATION
-M.S. Computer Science | Stanford University | 2018
-B.S. Computer Science | UC Berkeley | 2016
-"""
+**Key takeaway:** The system prompt is where you define the agent's behavior, output format, and rules. The tool handles validation while the LLM handles intelligent extraction.
 
-print("Sending resume for parsing...\n")
-response = agent(
-    f"Parse this resume into structured JSON:\n\n{SAMPLE_RESUME}"
-)
-print(response)
-```
+## Key Concepts Summary
 
-Run:
-```bash
-uv run python main.py
-```
+| Concept | What It Does |
+|---------|-------------|
+| `BedrockModel` | Configures which LLM to use (model ID + region) |
+| `Agent` | Wraps the model, manages conversation, orchestrates tools |
+| `@tool` | Transforms a Python function into an agent-callable tool |
+| `system_prompt` | Sets the agent's personality, rules, and output format |
+| `agent("message")` | Sends a message and returns the LLM's response |
 
-## What You Learned
-- How to create a Strands agent with a Bedrock model
-- How to define custom tools with the `@tool` decorator
-- How the agent decides when to call tools based on the prompt
-- How to structure a system prompt for specific tasks
+## Common Issues
+
+| Issue | Fix |
+|-------|-----|
+| `InvalidClientTokenId` | AWS credentials expired. Run `aws configure` or refresh with ada |
+| `AccessDeniedException` on Bedrock | Enable Claude 3.7 Sonnet in the Bedrock console (Model Access) |
+| `ModuleNotFoundError: strands` | Run `uv add strands-agents boto3` |
 
 ## Next: Lab 2
 In Lab 2, you'll add PDF support using AWS Textract and a job description parser.
