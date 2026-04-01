@@ -11,7 +11,7 @@ import boto3
 from strands import tool
 
 S3_BUCKET = os.environ.get(
-    "RESUME_S3_BUCKET", "resume-modifier-agent-dev-335566888056"
+    "RESUME_S3_BUCKET", "resume-modifier-agent-dev-CHANGEME"
 )
 AWS_REGION = os.environ.get("AWS_DEFAULT_REGION", "us-east-1")
 
