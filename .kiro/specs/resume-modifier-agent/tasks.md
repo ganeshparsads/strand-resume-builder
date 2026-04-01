@@ -70,11 +70,11 @@ Build a Strands SDK agent that accepts a PDF resume and job description, extract
     - Verify the agent calls tools in correct sequence and returns structured output
     - _Requirements: 11.1, 11.2_
 
-- [ ] 6. Checkpoint — Validate core parsing pipeline
+- [x] 6. Checkpoint — Validate core parsing pipeline
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 7. Implement `parse_job_description` tool
-  - [ ] 7.1 Create `src/tools/parse_job_description.py` with the `@tool` decorated function
+- [x] 7. Implement `parse_job_description` tool
+  - [x] 7.1 Create `src/tools/parse_job_description.py` with the `@tool` decorated function
     - Accept `job_description: str`, validate length (50–30,000 chars)
     - Use the agent's LLM to extract structured fields into a `JobRequirements` dict
     - Ensure `required_skills` has at least one entry, `keywords` is non-empty
@@ -85,8 +85,8 @@ Build a Strands SDK agent that accepts a PDF resume and job description, extract
     - **Property 4: Job Parsing Produces Valid JobRequirements** — for any valid job description (50–30,000 chars), output has at least one required skill and non-empty keywords
     - **Validates: Requirements 4.1, 4.2, 4.3**
 
-- [ ] 8. Implement `match_skills` tool
-  - [ ] 8.1 Create `src/tools/match_skills.py` with the `@tool` decorated function
+- [x] 8. Implement `match_skills` tool
+  - [x] 8.1 Create `src/tools/match_skills.py` with the `@tool` decorated function
     - Accept `profile: dict` and `requirements: dict`
     - Classify every required skill as matched or missing (complete partition, no overlap)
     - Identify transferable skills from user profile
@@ -99,8 +99,8 @@ Build a Strands SDK agent that accepts a PDF resume and job description, extract
     - **Property 6: Keyword Coverage Bounds** — `keyword_coverage` in [0.0, 1.0]
     - **Validates: Requirements 5.2, 5.3, 5.4**
 
-- [ ] 9. Implement `generate_resume_html` tool
-  - [ ] 9.1 Create `src/tools/generate_resume_html.py` with the `@tool` decorated function
+- [x] 9. Implement `generate_resume_html` tool
+  - [x] 9.1 Create `src/tools/generate_resume_html.py` with the `@tool` decorated function
     - Accept `profile`, `match_result`, `job_requirements`, optional `feedback` and `current_html`
     - Generate ATS-friendly HTML using semantic tags (`section`, `h1`–`h3`, `ul`, `li`)
     - Include all `matched_skills` in output HTML
@@ -113,8 +113,8 @@ Build a Strands SDK agent that accepts a PDF resume and job description, extract
     - **Property 8: ATS Keyword Inclusion** — all `matched_skills` appear in output HTML
     - **Validates: Requirements 6.1, 6.2, 6.3, 6.4**
 
-- [ ] 10. Implement `manage_versions` tool
-  - [ ] 10.1 Create `src/tools/manage_versions.py` with the `@tool` decorated function
+- [-] 10. Implement `manage_versions` tool
+  - [x] 10.1 Create `src/tools/manage_versions.py` with the `@tool` decorated function
     - Support actions: `save`, `get_latest`, `get`, `list`
     - Store/retrieve versions in S3 under `<session_id>/versions/` prefix
     - `save`: generate UUID `version_id`, ISO 8601 timestamp, store HTML in S3, return `VersionRecord`
@@ -131,18 +131,18 @@ Build a Strands SDK agent that accepts a PDF resume and job description, extract
     - **Property 13: Session Isolation** — operations for session A never touch session B's S3 prefix
     - **Validates: Requirements 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 8.1, 8.2, 8.3**
 
-- [ ] 11. Wire all tools into the agent and test full pipeline
-  - [ ] 11.1 Update `src/agent.py` to register all six tools
+- [x] 11. Wire all tools into the agent and test full pipeline
+  - [x] 11.1 Update `src/agent.py` to register all six tools
     - Add `parse_job_description`, `match_skills`, `generate_resume_html`, `manage_versions`
     - Update system prompt to cover full workflow and refinement flow
     - _Requirements: 11.1, 11.2_
 
-  - [ ] 11.2 Update `main.py` to test full end-to-end flow locally
+  - [x] 11.2 Update `main.py` to test full end-to-end flow locally
     - Test generate flow: extract PDF → parse resume → parse job → match skills → generate HTML → save version
     - Test refinement flow: get latest version → apply feedback → save new version
     - _Requirements: 9.1, 9.2, 9.3, 11.1, 11.2_
 
-- [ ] 12. Checkpoint — Validate full agent pipeline
+- [x] 12. Checkpoint — Validate full agent pipeline
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 13. AgentCore deployment entrypoint

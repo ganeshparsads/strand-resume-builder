@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment
+.venv/
+
+# uv
+uv.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# AWS
+.aws/
+
+# Resume versions (local storage)
+.versions/
+
+# PDF uploads
+*.pdf
+
+# Environment
+.env
+.env.*
+
+# Testing
+.pytest_cache/
+htmlcov/
+.coverage
