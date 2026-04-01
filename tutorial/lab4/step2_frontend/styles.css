@@ -1,0 +1,41 @@
+/* Step 2: Frontend Styles — Clean, responsive layout */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+.app { max-width: 1400px; margin: 0 auto; padding: 1rem; }
+header { text-align: center; padding: 1.5rem 0; border-bottom: 1px solid #e0e0e0; margin-bottom: 1.5rem; }
+header h1 { font-size: 1.8rem; color: #0066cc; }
+header p { color: #666; margin-top: 0.3rem; }
+main { display: grid; grid-template-columns: 1fr 1.5fr; gap: 1.5rem; }
+.input-panel, .output-panel { background: #fff; border-radius: 8px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+h2 { font-size: 1.1rem; margin-bottom: 0.8rem; color: #444; }
+h3 { font-size: 1rem; margin-bottom: 0.5rem; color: #555; }
+section { margin-bottom: 1.2rem; }
+.file-upload { border: 2px dashed #ccc; border-radius: 6px; padding: 1.5rem; text-align: center; cursor: pointer; position: relative; }
+.file-upload:hover, .file-upload.dragover { border-color: #0066cc; background: #f0f7ff; }
+.file-upload input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.upload-icon { font-size: 2rem; display: block; margin-bottom: 0.5rem; }
+.file-info { margin-top: 0.5rem; color: #0066cc; font-size: 0.9rem; }
+textarea { width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; font-size: 0.95rem; resize: vertical; }
+textarea:focus { outline: none; border-color: #0066cc; }
+.btn-primary, .btn-secondary, .btn-small { border: none; border-radius: 6px; cursor: pointer; font-size: 0.95rem; }
+.btn-primary { width: 100%; padding: 0.8rem; background: #0066cc; color: #fff; }
+.btn-primary:hover:not(:disabled) { background: #0052a3; }
+.btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+.btn-secondary { padding: 0.6rem 1.2rem; background: #e8f0fe; color: #0066cc; margin-top: 0.5rem; }
+.btn-secondary:hover { background: #d0e3fc; }
+.btn-small { padding: 0.4rem 0.8rem; background: #f0f0f0; color: #333; font-size: 0.85rem; }
+.btn-small:hover { background: #e0e0e0; }
+.status { margin-top: 0.8rem; padding: 0.6rem; border-radius: 6px; font-size: 0.9rem; }
+.status.loading { background: #fff3cd; color: #856404; }
+.status.success { background: #d4edda; color: #155724; }
+.status.error { background: #f8d7da; color: #721c24; }
+.output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
+.preview-area { border: 1px solid #e0e0e0; border-radius: 6px; padding: 1rem; min-height: 400px; background: #fff; overflow: auto; max-height: 80vh; }
+.placeholder-text { color: #999; text-align: center; padding-top: 5rem; }
+.version-sidebar { margin-top: 1rem; border-top: 1px solid #e0e0e0; padding-top: 1rem; }
+.version-sidebar ul { list-style: none; }
+.version-sidebar li { margin-bottom: 0.4rem; }
+.version-btn { width: 100%; text-align: left; padding: 0.5rem; background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
+.version-btn:hover { background: #e8f0fe; }
+.version-btn small { color: #666; }
+@media (max-width: 900px) { main { grid-template-columns: 1fr; } }

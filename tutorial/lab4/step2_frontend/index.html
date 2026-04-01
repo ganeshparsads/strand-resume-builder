@@ -1,0 +1,75 @@
+<!--
+Step 2: Frontend — Resume Modifier Agent UI
+
+This is a static HTML page that provides:
+- PDF file upload (drag & drop or click)
+- Job description text input
+- Resume preview panel
+- Refinement feedback input
+- Version history sidebar
+
+It communicates with the agent via POST /invocations
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Modifier Agent</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app">
+        <header>
+            <h1>Resume Modifier Agent</h1>
+            <p>Upload your PDF resume and a job description to get a tailored, ATS-friendly resume.</p>
+        </header>
+        <main>
+            <div class="input-panel">
+                <section>
+                    <h2>1. Upload Resume (PDF)</h2>
+                    <div class="file-upload" id="drop-zone">
+                        <input type="file" id="resume-upload" accept=".pdf" aria-label="Upload PDF resume">
+                        <label for="resume-upload">
+                            <span class="upload-icon">📄</span>
+                            <span>Drop PDF here or click to browse</span>
+                        </label>
+                        <div id="file-info" class="file-info" hidden></div>
+                    </div>
+                </section>
+                <section>
+                    <h2>2. Paste Job Description</h2>
+                    <textarea id="job-description" rows="10"
+                        placeholder="Paste the job description here..."
+                        aria-label="Job description text"></textarea>
+                </section>
+                <button id="generate-btn" class="btn-primary" disabled>
+                    Generate Tailored Resume
+                </button>
+                <div id="status" class="status" hidden></div>
+                <section id="feedback-section" hidden>
+                    <h2>Refine Resume</h2>
+                    <textarea id="feedback" rows="4"
+                        placeholder="Describe what changes you'd like..."
+                        aria-label="Refinement feedback"></textarea>
+                    <button id="refine-btn" class="btn-secondary">Apply Feedback</button>
+                </section>
+            </div>
+            <div class="output-panel">
+                <div class="output-header">
+                    <h2>Resume Preview</h2>
+                    <button id="download-btn" class="btn-small" hidden>Download PDF</button>
+                </div>
+                <div id="preview" class="preview-area">
+                    <p class="placeholder-text">Your tailored resume will appear here.</p>
+                </div>
+                <aside id="version-sidebar" hidden>
+                    <h3>Version History</h3>
+                    <ul id="version-list"></ul>
+                </aside>
+            </div>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
