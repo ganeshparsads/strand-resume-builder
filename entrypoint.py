@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 
 import boto3
 from bedrock_agentcore import BedrockAgentCoreApp
+from botocore.config import Config as BotocoreConfig
 from strands import Agent, tool
 from strands.models.bedrock import BedrockModel
 
@@ -25,21 +26,14 @@ model = BedrockModel(
         "us.anthropic.claude-3-7-sonnet-20250219-v1:0",
     ),
     region_name=AWS_REGION,
+    boto_client_config=BotocoreConfig(read_timeout=300),
 )
 
 
 # --- Tools ---
 
-@tool
-def extract_text_from_pdf(pdf_base64: str) -> str:
-    """Extract text from a base64-encoded PDF using AWS Textract async API.
-
-    Args:
-        pdf_base64: Base64-encoded PDF file content.
-
-    Returns:
-        Plain text extracted from the PDF.
-    """
+def _do_extract_text_from_pdf(pdf_base64: str) -> str:
+    """Extract text from base64 PDF — plain function for direct calls."""
     pdf_bytes = base64.b64decode(pdf_base64)
     if not pdf_bytes[:5].startswith(b"%PDF"):
         raise ValueError("Not a valid PDF")
@@ -84,6 +78,19 @@ def extract_text_from_pdf(pdf_base64: str) -> str:
     if not text.strip():
         raise RuntimeError("No text found in PDF")
     return text
+
+
+@tool
+def extract_text_from_pdf(pdf_base64: str) -> str:
+    """Extract text from a base64-encoded PDF using AWS Textract async API.
+
+    Args:
+        pdf_base64: Base64-encoded PDF file content.
+
+    Returns:
+        Plain text extracted from the PDF.
+    """
+    return _do_extract_text_from_pdf(pdf_base64)
 
 
 @tool
@@ -205,11 +212,13 @@ def manage_versions(
         return {"status": "found", "count": len(versions), "versions": versions}
 
     elif action == "get_latest":
-        result = manage_versions.fn(
-            action="list", session_id=session_id
-        )
-        vs = result.get("versions", [])
-        return {"status": "found", "record": vs[0]} if vs else {"status": "empty", "record": {}}
+        resp = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=prefix)
+        versions_list = []
+        for obj in resp.get("Contents", []):
+            data = s3.get_object(Bucket=S3_BUCKET, Key=obj["Key"])
+            versions_list.append(json.loads(data["Body"].read()))
+        versions_list.sort(key=lambda v: v["timestamp"], reverse=True)
+        return {"status": "found", "record": versions_list[0]} if versions_list else {"status": "empty", "record": {}}
 
     elif action == "get":
         key = f"{prefix}{version_id}.json"
@@ -262,6 +271,19 @@ def invoke(payload):
     user_message = payload.get("prompt", payload.get("message", ""))
     if not user_message:
         return {"error": "prompt or message is required"}
+
+    # If prompt contains base64 PDF, extract text first to keep the LLM prompt small
+    pdf_marker = "Resume PDF base64:\n"
+    if pdf_marker in user_message:
+        parts = user_message.split(pdf_marker, 1)
+        prompt_text = parts[0].strip()
+        pdf_b64 = parts[1].strip()
+        try:
+            resume_text = _do_extract_text_from_pdf(pdf_b64)
+            user_message = f"{prompt_text}\n\nExtracted Resume Text:\n{resume_text}"
+        except Exception as e:
+            return {"error": f"PDF extraction failed: {e}"}
+
     try:
         result = agent(user_message)
         return {"result": str(result)}

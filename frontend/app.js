@@ -1,7 +1,5 @@
 // Resume Modifier Agent - Frontend
-const AGENT_ENDPOINT = window.location.origin.includes("localhost")
-  ? "http://localhost:8080"
-  : window.AGENT_ENDPOINT || "";
+const AGENT_ENDPOINT = "";
 
 let sessionId = crypto.randomUUID();
 let selectedFile = null;
@@ -79,13 +77,12 @@ generateBtn.addEventListener("click", async () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        session_id: sessionId,
-        message:
-          `Extract text from the PDF resume, parse it, parse the job description, ` +
+        prompt:
+          `Extract text from the PDF resume (base64 below), parse it, parse the job description, ` +
           `match skills, generate a tailored ATS-friendly HTML resume, and save the version.\n\n` +
           `Session ID: ${sessionId}\n` +
-          `Job Description:\n${jobDescription.value.trim()}`,
-        resume_pdf_base64: pdfBase64,
+          `Job Description:\n${jobDescription.value.trim()}\n\n` +
+          `Resume PDF base64:\n${pdfBase64}`,
       }),
     });
 
@@ -95,7 +92,7 @@ generateBtn.addEventListener("click", async () => {
       return;
     }
 
-    renderResponse(data.response);
+    renderResponse(data.result || data.response || "");
     showStatus("Resume generated successfully!", "success");
     feedbackSection.hidden = false;
     downloadBtn.hidden = false;
@@ -121,10 +118,7 @@ refineBtn.addEventListener("click", async () => {
     const response = await fetch(`${AGENT_ENDPOINT}/invocations`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        session_id: sessionId,
-        message: feedbackText,
-      }),
+      body: JSON.stringify({ prompt: feedbackText }),
     });
 
     const data = await response.json();
@@ -133,7 +127,7 @@ refineBtn.addEventListener("click", async () => {
       return;
     }
 
-    renderResponse(data.response);
+    renderResponse(data.result || data.response || "");
     showStatus("Resume refined!", "success");
     addVersion(feedbackText);
     feedback.value = "";
