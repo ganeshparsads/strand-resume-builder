@@ -2,6 +2,10 @@
 
 AI-powered resume optimization app built with [Strands Agents SDK](https://strandsagents.com/) and deployed on [Amazon Bedrock AgentCore](https://docs.aws.amazon.com/bedrock-agentcore/). Upload a PDF resume and a job description — the agent tailors your resume for ATS compatibility.
 
+## Demo
+
+![Final Run](output/FinalRun.png)
+
 ## Architecture
 
 ```
