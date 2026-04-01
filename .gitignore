@@ -24,6 +24,8 @@ Thumbs.db
 
 # AWS
 .aws/
+.bedrock_agentcore.yaml
+.bedrock_agentcore/
 
 # Resume versions (local storage)
 .versions/

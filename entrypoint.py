@@ -17,7 +17,7 @@ app = BedrockAgentCoreApp()
 
 AWS_REGION = os.environ.get("AWS_DEFAULT_REGION", "us-east-1")
 S3_BUCKET = os.environ.get(
-    "RESUME_S3_BUCKET", "resume-modifier-agent-dev-335566888056"
+    "RESUME_S3_BUCKET", "resume-modifier-agent-dev-CHANGEME"
 )
 
 model = BedrockModel(
