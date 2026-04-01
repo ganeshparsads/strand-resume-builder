@@ -145,8 +145,8 @@ Build a Strands SDK agent that accepts a PDF resume and job description, extract
 - [x] 12. Checkpoint — Validate full agent pipeline
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 13. AgentCore deployment entrypoint
-  - [ ] 13.1 Create `src/entrypoint.py` with `BedrockAgentCoreApp` wrapper
+- [x] 13. AgentCore deployment entrypoint
+  - [x] 13.1 Create `src/entrypoint.py` with `BedrockAgentCoreApp` wrapper
     - Implement `@app.entrypoint` `invoke` function
     - Parse payload for `session_id`, `message`, `resume_pdf_base64`
     - Route to Strands agent and return structured JSON response
@@ -161,8 +161,8 @@ Build a Strands SDK agent that accepts a PDF resume and job description, extract
     - **Property 14: Error Recovery Preserves No Side Effects** — validation/extraction errors return error message with no VersionRecord created
     - **Validates: Requirements 2.7, 11.3, 11.4**
 
-- [ ] 14. Implement frontend SPA
-  - [ ] 14.1 Create `frontend/index.html` with PDF upload, job description input, and resume preview
+- [x] 14. Implement frontend SPA
+  - [x] 14.1 Create `frontend/index.html` with PDF upload, job description input, and resume preview
     - File upload input accepting `.pdf` only
     - Text area for job description
     - Preview area for rendered HTML resume
@@ -170,7 +170,7 @@ Build a Strands SDK agent that accepts a PDF resume and job description, extract
     - Version history sidebar
     - _Requirements: 10.1, 10.2, 10.5, 10.6, 10.7_
 
-  - [ ] 14.2 Create `frontend/app.js` with agent endpoint integration
+  - [x] 14.2 Create `frontend/app.js` with agent endpoint integration
     - Encode uploaded PDF as base64 and send to agent endpoint
     - Reject non-PDF files with error message
     - Display upload progress and extraction status
@@ -179,11 +179,11 @@ Build a Strands SDK agent that accepts a PDF resume and job description, extract
     - Handle version history navigation
     - _Requirements: 1.1, 10.1, 10.2, 10.3, 10.4, 10.5, 10.6, 10.7_
 
-  - [ ] 14.3 Create `frontend/styles.css` with layout and styling
+  - [x] 14.3 Create `frontend/styles.css` with layout and styling
     - Responsive layout for upload form, preview, and version sidebar
     - _Requirements: 10.1_
 
-- [ ] 15. Final checkpoint — Full system validation
+- [x] 15. Final checkpoint — Full system validation
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
